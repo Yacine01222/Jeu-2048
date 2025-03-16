@@ -6,16 +6,93 @@
 #Namsai Souvanthong
 
 #### MODULES / BIBLIOTHEQUES 
-
 import tkinter as tk
 import random as rd
-from tkinter import messagebox
-
-taille_case = 100
-
-#### PARTIE INTERFACE #####
-
 import tkinter as tk
+
+TAILLE_CASE = 100
+
+def gauche():
+    decale = True
+    while decale == True: # une boucle qui décale tant que c'est possible 
+        decale = False
+
+        for y in range(4): 
+            for x in range(3, 0, -1):
+                carre = liste_carre[x + y * 4]
+                voisine = liste_carre[x + y * 4 - 1]
+                if carre["valeur"] == voisine["valeur"] or voisine["valeur"] == 0: 
+                    voisine["valeur"] += carre["valeur"]
+                    carre["valeur"] = 0
+                    decale = True
+    
+    turn()
+    return
+
+def droite():
+    turn()
+    return
+
+def haut():
+    turn()
+    return
+
+def bas():
+    turn()
+    return
+
+# Choisir de manière aléatoire une case vide 
+def get_random_free_cell():
+    case_libre = []
+    for carre in liste_carre:
+        if carre["valeur"]==0:
+            case_libre.append(carre)
+    
+    return case_libre[rd.randint(0, len(case_libre) - 1)]
+
+# permet de vérifier si toutes les cases sont remplies 
+def is_complete_grid() -> bool:
+    for carre in liste_carre:
+        if carre["valeur"] == 0:
+            return False
+        
+    return True
+
+# permet de mettre à jour les cases 
+def update_labels(): 
+    for carre in liste_carre:
+        if carre["valeur"] < 2:
+            carre["label"].config(text = str(""))
+        else:
+            carre["label"].config(text = str(carre["valeur"]))
+
+# permet d'initialiser le jeu
+def start():
+    init_grid()
+    get_random_free_cell()["valeur"] = 2
+    get_random_free_cell()["valeur"] = 2
+    update_labels()
+
+# permet de générer la grille
+def init_grid():
+    """Dessiner le carré avec des dimensions de taille_case*taille_case pixels pour chaque case"""
+    for y in range(4):
+        for x in range(4):
+            canvas.create_rectangle(x * TAILLE_CASE, y * TAILLE_CASE, (y+1) * TAILLE_CASE, (x+1) * TAILLE_CASE)
+            text_carre = tk.Label(canvas, font = ("Arial",64),fg = "white")
+            liste_carre.append({
+                "valeur": 0,
+                "label": text_carre
+            })
+            text_carre.place(x=x * TAILLE_CASE + 1, y=y * TAILLE_CASE + 1, width=TAILLE_CASE -2 , height=TAILLE_CASE -2)
+
+
+#effectue un tour de jeux 
+def turn():
+    if is_complete_grid() == False:
+        get_random_free_cell()["valeur"] = 2
+
+    update_labels() #mise à jour d'affichage 
 
 
 fenetre = tk.Tk()
@@ -27,166 +104,28 @@ fenetre.geometry("800x800")
 
 
 canvas = tk.Canvas(fenetre, width=395, height=395, borderwidth=2, relief="solid")
-
-taille_case = 100
 liste_carre = []
 
-def draw(): 
-    """Dessiner le carré avec des dimensions de taille_casextaille_case pixels pour chaque case"""
-    for i in range(4):
-        for j in range(4):
-            canvas.create_rectangle(i*taille_case, j*taille_case, (i+1)*taille_case, (j+1)*taille_case)
-            text_carre = tk.Label(canvas, font = ("Arial",64),fg = "white")
-            liste_carre.append({
-                "x":i, 
-                "y":j,
-                "valeur":0,
-                "label": text_carre
-            })
-            text_carre.place(x=i*taille_case + 1, y=j*taille_case + 1,width = taille_case -2 , height=taille_case -2)
-
-
-
-def gauche():
-    update_labels()
-    return
-
-def droite():
-    update_labels()
-    return
-
-def haut():
-    update_labels()
-    return
-
-def bas():
-    update_labels()
-    return
-
-def get_random_free_cell():
-    case_libre = []
-    for carre in liste_carre:
-        if carre["valeur"]==0:
-            case_libre.append(carre)
-    return case_libre[rd.randint(0,len(case_libre))]
-
-# permet de mettre à jour les cases 
-def update_labels(): 
-    for carre in liste_carre:
-        if carre["valeur"] < 2:
-            carre["label"].config(text = str(""))
-        else:
-            carre["label"].config(text = str(carre["valeur"]))
-
-def start():
-    get_random_free_cell()["valeur"] = 2
-    get_random_free_cell()["valeur"] = 2
-    update_labels()
-
 # Boutons
-left_button = tk.Button(fenetre, text="←", fg = "black", font=("Arial","15"),command= gauche)  #command=gauche
-right_button = tk.Button(fenetre, text="→", fg = "black", font=("Arial","15"),command = droite) #command=droite
-up_button = tk.Button(fenetre, text="↑",  fg = "black", font=("Arial","15"),command=haut) #command=haut
-down_button = tk.Button(fenetre, text="↓", fg = "black", font=("Arial","15"),command=bas)#command=bas
+left_button = tk.Button(fenetre, text="←", fg = "black", font=("Arial","15"),command= gauche)
+right_button = tk.Button(fenetre, text="→", fg = "black", font=("Arial","15"),command = droite)
+up_button = tk.Button(fenetre, text="↑",  fg = "black", font=("Arial","15"),command=haut)
+down_button = tk.Button(fenetre, text="↓", fg = "black", font=("Arial","15"),command=bas)
 
-left_button.place(relx=0.80, rely=0.5, anchor="center")   # command = gauche
-right_button.place(relx=0.90, rely=0.5, anchor="center")  # command = droite
-up_button.place(relx=0.85, rely=0.42, anchor="center")    # command = haut
-down_button.place(relx=0.85, rely=0.58, anchor="center")  #command = bas
+left_button.place(relx=0.80, rely=0.5, anchor="center")
+right_button.place(relx=0.90, rely=0.5, anchor="center")
+up_button.place(relx=0.85, rely=0.42, anchor="center")
+down_button.place(relx=0.85, rely=0.58, anchor="center")
 
-
-draw() #appelle la fonction qui dessine les cases
-
-start()
 # Ajouter le canevas à la fenêtre
 canvas.pack(expand=True)
 
-liste_carre_disponible = [[i,j,0] for i in range(4) for j in range(4)]
-
 #Initailisation du score
 score = 0
-check = 0
-#List stockant les carrés
-liste_carre = []
-liste_carre_disponible = [] # pas le bon nom -> tous les carrés de la grille
 
 #afficher label score 
-#Afficher le score
 score_label = tk.Label(fenetre, text="Score : " + str(score), font = ("helvetica", "20"))
 score_label.pack()
-
-#augmenter le score 
-def augmenter_score():
-    global score
-    score_label.config(text="Score : " + str(score))
-
-def update_canvas():
-#Fonction pour mettre à jour la grille et fusionner les case
-    global canvas
-    global liste_carre_disponible
-    global colors
-    
-    canvas.delete("all") # supprime tout les éléments concernés pour canva
-    
-    for i in range(4):
-        #parcours les 4 lignes et colonnes de la grille,x0 y0 : coin haut gauche du carré,x1 y1 coin bas droit du carré,valeur permet de trouver la valeur dans la case dispo
-        for j in range(4):
-            x0 = j * taille_case
-            y0 = i * taille_case
-            x1 = x0 + taille_case
-            y1 = y0 + taille_case
-            valeur = liste_carre_disponible[i*4+j][2]
-            couleur = colors.get(valeur, "#FFFFFF")
-            canvas.create_rectangle(x0, y0, x1, y1, fill=couleur, outline="#000000")
-            if valeur != 0:
-                canvas.create_text((x0 + x1) / 2, (y0 + y1) / 2, text=str(valeur), font=("Courrier", 20, "bold"))
-        
-    canvas.pack()
-
-#Initialisation de la liste des carrés disponibles
-def chiffre_dans_une_case():
-#Fonction qui ajoute une case(tuile) aléatoirement
-    global liste_carre_disponible
-    global liste_carre
-    #n = nb de cases dispo
-    #cases vide contient les indices des cases vides
-    n = len(liste_carre_disponible)
-    cases_vides = []
-    
-    for i in range(n):
-        if liste_carre_disponible[i][2] == 0:
-            cases_vides.append(i)
-        
-
-    if cases_vides:
-        index = rd.choice(cases_vides)
-        i, j = liste_carre_disponible[index][:2]
-        valeur = rd.choice([2, 2 , 2 , 2 , 2 , 2 , 2 , 2 , 4])
-        #rd.choice choisit case vide au hasard, on récupère alors l'indice de la case, 90% de chance d'avoir un 2 10% d'avoir un 4
-
-        liste_carre_disponible[index][2] = valeur
-            #on choisit un carré(=rectangle particulier mais rectangle qd meme,o, affiche le nombre ds la case, on stock ces 2 objets dans une liste : liste carre
-        carre = canvas.create_rectangle(j*taille_case, i*taille_case, (j+1)*taille_case, (i+1)*taille_case, fill=colors[valeur], outline="#000000")
-        carre_texte = canvas.create_text(j*taille_case + taille_case/2, i*taille_case + taille_case/2, text=str(valeur), font=("Courrier", 20, "bold"))
-        liste_carre.append((carre, carre_texte))
-            #len case_vide==1 veut dire que c la dernière case vide, donc plus de case/tuile ne peut etre ajoutée
-
-        if len(cases_vides) == 1:
-            messagebox.showinfo("2048", "Partie terminée \nVotre score est de : {}".format(score))
-            relancer()
-
-# relancer la partie avec la fonction relancer
-def relancer():
-    """Permet de relancer la partie"""
-    global liste_carre_disponible
-    global score
-    score = 0
-    augmenter_score()
-    liste_carre_disponible = [[i,j,0] for i in range(4) for j in range(4)]
-    #on réinitialise la liste de carré dispo
-
-    update_canvas()
-    chiffre_dans_une_case()
-    chiffre_dans_une_case()
+start()
 
 fenetre.mainloop()
