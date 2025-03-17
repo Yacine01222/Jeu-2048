@@ -13,10 +13,7 @@ import tkinter as tk
 TAILLE_CASE = 100
 
 def gauche():
-    decale = True
-    while decale == True: # une boucle qui décale tant que c'est possible 
-        decale = False
-
+    for i in range(4): # une boucle qui décale tant que c'est possible 
         for y in range(4): 
             for x in range(3, 0, -1):
                 carre = liste_carre[x + y * 4]
@@ -24,7 +21,6 @@ def gauche():
                 if carre["valeur"] == voisine["valeur"] or voisine["valeur"] == 0: 
                     voisine["valeur"] += carre["valeur"]
                     carre["valeur"] = 0
-                    decale = True
     
     turn()
     return
